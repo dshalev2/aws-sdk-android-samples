@@ -19,7 +19,7 @@ package com.amazonaws.demo.temperaturecontrol;
  * <pre>
  * {
  *   "state": {
- *     "desired": {
+ *     "reported": {
  *       "setPoint": 72,
  *       "enabled": true
  *     },
@@ -29,7 +29,7 @@ package com.amazonaws.demo.temperaturecontrol;
  *     }
  *   },
  *   "metadata": {
- *     "desired": {
+ *     "reported": {
  *       "setPoint": {
  *         "timestamp": 1449791001
  *       },

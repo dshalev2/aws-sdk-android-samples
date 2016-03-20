@@ -19,7 +19,7 @@ package com.amazonaws.demo.temperaturecontrol;
  * <pre>
  * {
  *   "state": {
- *     "desired": {
+ *     "reported": {
  *       "intTemp": 72,
  *       "extTemp": 45,
  *       "curState": "stopped"
@@ -31,7 +31,7 @@ package com.amazonaws.demo.temperaturecontrol;
  *     }
  *   },
  *   "metadata": {
- *     "desired": {
+ *     "reported": {
  *       "intTemp": {
  *         "timestamp": 1449791237
  *       },
@@ -56,30 +56,51 @@ public class TemperatureStatus {
     }
 
     public class State {
-        Desired desired;
-        Delta delta;
+        Reported reported;
+//        Delta delta;
 
         State() {
-            desired = new Desired();
-            delta = new Delta();
+            reported = new Reported();
+//            delta = new Delta();
         }
 
-        public class Desired {
-            Desired() {
+        public class Reported {
+            Room room1;
+            Room room2;
+            Room room3;
+
+            Reported() {
+                room1 = new Room();
+                room2 = new Room();
+                room3 = new Room();
             }
 
-            public Integer intTemp;
-            public Integer extTemp;
-            public String curState;
+
+            public Integer power;
+            public Integer control_temp;
+            public Integer return_air_sensor_main;
+            public Integer cool_output;
+            public Integer heat_output;
+            public Integer fan_output;
+            public Integer rolbit_version;
+
+
         }
 
-        public class Delta {
-            Delta() {
-            }
+//        public class Delta {
+//            Delta() {
+//            }
+//
+//            public Integer intTemp;
+//            public Integer extTemp;
+//            public String curState;
+//        }
 
-            public Integer intTemp;
-            public Integer extTemp;
-            public String curState;
+        public class Room {
+            Room() {
+            }
+            public Integer set_point;
+            public Integer damper_open;
         }
     }
 

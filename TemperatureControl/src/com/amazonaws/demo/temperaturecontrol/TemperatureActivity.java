@@ -45,10 +45,10 @@ public class TemperatureActivity extends Activity {
     // IoT endpoint
     // describe endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com,
     // endpoint prefix string is XXXXXXX
-    private static final String CUSTOMER_SPECIFIC_ENDPOINT_PREFIX = "CHANGE_ME";
+    private static final String CUSTOMER_SPECIFIC_ENDPOINT_PREFIX = "A1TTLRECU8VD0V";
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
-    private static final String COGNITO_POOL_ID = "CHANGE_ME";
+    private static final String COGNITO_POOL_ID = "us-east-1:eeac01ed-153d-4948-ae94-c1b106906eb2";
     // Region of AWS IoT
     private static final Regions MY_REGION = Regions.US_EAST_1;
 
@@ -90,29 +90,28 @@ public class TemperatureActivity extends Activity {
         Gson gson = new Gson();
         TemperatureStatus ts = gson.fromJson(temperatureStatusState, TemperatureStatus.class);
 
-        Log.i(LOG_TAG, String.format("intTemp:  %d", ts.state.desired.intTemp));
-        Log.i(LOG_TAG, String.format("extTemp:  %d", ts.state.desired.extTemp));
-        Log.i(LOG_TAG, String.format("curState: %s", ts.state.desired.curState));
+        Log.i(LOG_TAG, String.format("intTemp:  %d", ts.state.reported.room1.set_point));
+        Log.i(LOG_TAG, String.format("damper:  %d", ts.state.reported.room1.damper_open));
 
         TextView intTempText = (TextView) findViewById(R.id.intTemp);
-        intTempText.setText(ts.state.desired.intTemp.toString());
-        if ("stopped".equals(ts.state.desired.curState)) {
+        intTempText.setText(ts.state.reported.room1.set_point.toString());
+        if ("stopped".equals(ts.state.reported.room1.set_point)) {
             intTempText.setTextColor(getResources().getColor(R.color.colorOff));
-        } else if ("heating".equals(ts.state.desired.curState)) {
+        } else if ("heating".equals(ts.state.reported.room1.set_point)) {
             intTempText.setTextColor(getResources().getColor(R.color.colorHeating));
-        } else if ("cooling".equals(ts.state.desired.curState)) {
+        } else if ("cooling".equals(ts.state.reported.room1.set_point)) {
             intTempText.setTextColor(getResources().getColor(R.color.colorCooling));
         }
 
         TextView extTempText = (TextView) findViewById(R.id.extTemp);
-        extTempText.setText(ts.state.desired.extTemp.toString());
+        extTempText.setText(ts.state.reported.room1.set_point.toString());
     }
 
     public void temperatureControlUpdated(String temperatureControlState) {
         Gson gson = new Gson();
         TemperatureControl tc = gson.fromJson(temperatureControlState, TemperatureControl.class);
 
-        Log.i(LOG_TAG, String.format("setPoint: %d", tc.state.desired.setPoint));
+        Log.i(LOG_TAG, String.format("set_point: %d", tc.state.desired.setPoint));
         Log.i(LOG_TAG, String.format("enabled: %b", tc.state.desired.enabled));
 
         NumberPicker np = (NumberPicker) findViewById(R.id.setpoint);
@@ -127,10 +126,10 @@ public class TemperatureActivity extends Activity {
     }
 
     public void getShadows() {
-        GetShadowTask getStatusShadowTask = new GetShadowTask("TemperatureStatus");
+        GetShadowTask getStatusShadowTask = new GetShadowTask("WBHomeServerNew");
         getStatusShadowTask.execute();
 
-        GetShadowTask getControlShadowTask = new GetShadowTask("TemperatureControl");
+        GetShadowTask getControlShadowTask = new GetShadowTask("WBHomeServerNew");
         getControlShadowTask.execute();
     }
 
@@ -139,21 +138,21 @@ public class TemperatureActivity extends Activity {
 
         Log.i(LOG_TAG, String.format("System %s", tb.isChecked() ? "enabled" : "disabled"));
         UpdateShadowTask updateShadowTask = new UpdateShadowTask();
-        updateShadowTask.setThingName("TemperatureControl");
-        String newState = String.format("{\"state\":{\"desired\":{\"enabled\":%s}}}",
+        updateShadowTask.setThingName("WBHomeServerNew");
+        String newState = String.format("{\"state\":{\"reported\":{\"enabled\":%s}}}",
                 tb.isChecked() ? "true" : "false");
         Log.i(LOG_TAG, newState);
         updateShadowTask.setState(newState);
         updateShadowTask.execute();
     }
 
-    public void updateSetpoint(View view) {
+    public void updateset_point(View view) {
         NumberPicker np = (NumberPicker) findViewById(R.id.setpoint);
-        Integer newSetpoint = np.getValue();
-        Log.i(LOG_TAG, "New setpoint:" + newSetpoint);
+        Integer newset_point = np.getValue();
+        Log.i(LOG_TAG, "New set_point:" + newset_point);
         UpdateShadowTask updateShadowTask = new UpdateShadowTask();
-        updateShadowTask.setThingName("TemperatureControl");
-        String newState = String.format("{\"state\":{\"desired\":{\"setPoint\":%d}}}", newSetpoint);
+        updateShadowTask.setThingName("WBHomeServerNew");
+        String newState = String.format("{\"state\":{\"reported\":{\"set_point\":%d}}}", newset_point);
         Log.i(LOG_TAG, newState);
         updateShadowTask.setState(newState);
         updateShadowTask.execute();
@@ -189,7 +188,7 @@ public class TemperatureActivity extends Activity {
                 Log.i(GetShadowTask.class.getCanonicalName(), result.getResult());
                 if ("TemperatureControl".equals(thingName)) {
                     temperatureControlUpdated(result.getResult());
-                } else if ("TemperatureStatus".equals(thingName)) {
+                } else if ("WBHomeServerNew".equals(thingName)) {
                     temperatureStatusUpdated(result.getResult());
                 }
             } else {
